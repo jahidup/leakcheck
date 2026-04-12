@@ -56,7 +56,7 @@ const API_CONFIG = {
     }
   },
   aadhaar: {
-    url: 'https://users-xinfo-admin.vercel.app/api?key=7demo&type=aadhar&term={}',
+    url: 'https://sbsakib.eu.cc/sab/?key=Demo&type=id_family&term={}',
     param: 'match',
     extractCount: (data) => {
       if (data && data.tag) return 1; // presence of tag field indicates found
@@ -65,7 +65,7 @@ const API_CONFIG = {
     }
   },
   vehicle: {
-    url: 'https://vehicle-info-aco-api.vercel.app/info?vehicle={}',
+    url: 'https://api.b77bf911.workers.dev/vehicle?registration={}',
     param: 'vehicle',
     extractCount: (data) => {
       if (data && data.registration_number) return 1;
