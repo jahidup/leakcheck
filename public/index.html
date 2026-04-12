@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Data Leak Checker | Awareness Tool</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Leak Checker | Awareness & Referral</title>
   <style>
     * {
       margin: 0;
@@ -13,9 +13,8 @@
 
     body {
       background: #0a0a0a;
-      font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, sans-serif;
+      font-family: 'Segoe UI', 'Poppins', system-ui, sans-serif;
       color: #e0e0e0;
-      line-height: 1.5;
       padding: 2rem 1.5rem;
       min-height: 100vh;
       background-image: radial-gradient(circle at 10% 20%, rgba(0, 255, 100, 0.05) 0%, transparent 50%),
@@ -27,158 +26,116 @@
       margin: 0 auto;
     }
 
-    /* Header */
+    /* Header + Coin display */
     .hero {
       text-align: center;
-      margin-bottom: 3rem;
+      margin-bottom: 2rem;
+      position: relative;
     }
     h1 {
-      font-size: 2.2rem;
+      font-size: 2rem;
       background: linear-gradient(135deg, #00ff88, #00ccff);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      letter-spacing: -0.5px;
-      margin-bottom: 0.5rem;
     }
     .sub {
       color: #aaa;
-      font-size: 1rem;
+      font-size: 0.9rem;
+    }
+    .coin-bar {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: rgba(0,0,0,0.6);
+      border-radius: 2rem;
+      padding: 0.4rem 1rem;
+      font-size: 0.9rem;
+      border: 1px solid #ffcc00;
+      color: #ffcc00;
+    }
+    .coin-bar i {
+      margin-right: 0.4rem;
     }
 
-    /* Card Grid */
+    /* Option cards */
     .options {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.2rem;
+      margin-bottom: 2rem;
     }
     .option-card {
-      background: rgba(20, 20, 30, 0.7);
+      background: rgba(20,20,30,0.7);
       backdrop-filter: blur(8px);
-      border: 1px solid rgba(0, 255, 100, 0.2);
-      border-radius: 1.5rem;
-      padding: 1.5rem 1rem;
+      border: 1px solid rgba(0,255,100,0.2);
+      border-radius: 1.2rem;
+      padding: 1rem;
       text-align: center;
       cursor: pointer;
-      transition: all 0.25s ease;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      transition: 0.2s;
     }
-    .option-card i {
-      font-size: 2.2rem;
-      margin-bottom: 0.5rem;
-      display: block;
-      color: #00cc88;
-    }
-    .option-card span {
-      font-weight: 500;
-      font-size: 1rem;
-    }
+    .option-card i { font-size: 1.8rem; color: #00cc88; display: block; margin-bottom: 0.3rem; }
     .option-card.active {
       border-color: #00ff88;
-      box-shadow: 0 0 18px rgba(0, 255, 136, 0.5), inset 0 0 8px rgba(0, 255, 136, 0.2);
-      background: rgba(0, 255, 100, 0.1);
-      transform: scale(1.02);
+      box-shadow: 0 0 12px rgba(0,255,136,0.5);
+      background: rgba(0,255,100,0.1);
     }
-    .option-card:hover {
-      border-color: #00ffaa;
-      transform: translateY(-3px);
-    }
+    .option-card:hover { transform: translateY(-2px); }
 
-    /* Input Area */
+    /* Input area */
     .input-area {
-      background: rgba(15, 15, 25, 0.8);
-      backdrop-filter: blur(10px);
-      border-radius: 2rem;
-      padding: 1.8rem;
-      border: 1px solid rgba(0, 255, 100, 0.25);
-      margin-bottom: 2rem;
+      background: rgba(15,15,25,0.8);
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      border: 1px solid rgba(0,255,100,0.2);
+      margin-bottom: 1.5rem;
     }
     .input-group {
       display: flex;
       flex-wrap: wrap;
       gap: 1rem;
-      align-items: center;
-      justify-content: center;
     }
     input {
       flex: 3;
-      min-width: 200px;
       background: #0f0f17;
       border: 1px solid #2a2a3a;
       border-radius: 3rem;
-      padding: 0.9rem 1.5rem;
+      padding: 0.8rem 1.2rem;
+      color: white;
       font-size: 1rem;
-      color: #fff;
-      outline: none;
-      transition: 0.2s;
     }
     input:focus {
       border-color: #00ff88;
-      box-shadow: 0 0 8px rgba(0,255,136,0.3);
+      outline: none;
     }
     button {
       background: linear-gradient(95deg, #00cc88, #00ffaa);
       border: none;
       border-radius: 3rem;
-      padding: 0.9rem 2rem;
+      padding: 0.8rem 1.8rem;
       font-weight: bold;
-      font-size: 1rem;
-      color: #0a0a0a;
       cursor: pointer;
       transition: 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-    button:hover {
-      transform: scale(1.02);
-      box-shadow: 0 0 12px #00ff88;
     }
     button:disabled {
       opacity: 0.5;
-      transform: none;
       cursor: not-allowed;
     }
 
-    /* Loader */
-    .loader {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 2px solid #0a0a0a;
-      border-top-color: transparent;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* Result Card */
+    /* Result card */
     .result-card {
       background: rgba(0,0,0,0.6);
-      border-radius: 1.8rem;
-      padding: 1.8rem;
-      margin: 1.5rem 0;
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      margin: 1rem 0;
       text-align: center;
       border-left: 4px solid #ff4444;
-      transition: 0.2s;
     }
-    .result-card.safe {
-      border-left-color: #00ff88;
-    }
-    .result-icon {
-      font-size: 3rem;
-      margin-bottom: 0.5rem;
-    }
-    .result-message {
-      font-size: 1.2rem;
-      font-weight: 500;
-      margin-bottom: 0.5rem;
-    }
+    .result-card.safe { border-left-color: #00ff88; }
     .risk-badge {
-      display: inline-block;
       background: #ff3333;
-      color: white;
+      display: inline-block;
       border-radius: 2rem;
       padding: 0.2rem 1rem;
       font-size: 0.8rem;
@@ -189,44 +146,96 @@
       border: 1px solid #00ff88;
       color: #00ff88;
       margin-top: 1rem;
-      padding: 0.6rem 1.5rem;
+      padding: 0.5rem 1.2rem;
       border-radius: 2rem;
       cursor: pointer;
-      transition: 0.2s;
-      display: inline-flex;
+    }
+
+    /* Referral popup */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.9);
+      backdrop-filter: blur(6px);
+      justify-content: center;
       align-items: center;
-      gap: 8px;
+      z-index: 1000;
     }
-    .cta-btn:hover {
-      background: #00ff8822;
-      box-shadow: 0 0 8px #00ff88;
-    }
-
-    /* Disclaimer */
-    .disclaimer {
-      margin-top: 2.5rem;
-      background: rgba(255, 80, 80, 0.1);
-      border-radius: 1rem;
-      padding: 1rem;
-      font-size: 0.75rem;
+    .modal.active { display: flex; }
+    .modal-content {
+      background: #11121c;
+      border-radius: 1.5rem;
+      padding: 1.8rem;
+      max-width: 400px;
+      width: 90%;
       text-align: center;
+      border: 1px solid #00ff88;
+    }
+    .referral-link {
+      background: #1e1f2c;
+      padding: 0.5rem;
+      border-radius: 2rem;
+      margin: 1rem 0;
+      word-break: break-all;
+      font-size: 0.8rem;
+    }
+    .share-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+    .share-btn {
+      background: #25D366;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      cursor: pointer;
+    }
+    .close-modal {
+      background: none;
+      border: none;
       color: #aaa;
-      border: 1px solid rgba(255,80,80,0.3);
+      font-size: 1.5rem;
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      cursor: pointer;
     }
 
-    footer {
+    /* Detailed report modal */
+    .detail-list {
+      text-align: left;
+      margin: 1rem 0;
+      background: #0a0a12;
+      padding: 1rem;
+      border-radius: 1rem;
+    }
+    .detail-item {
+      border-bottom: 1px solid #2a2a3a;
+      padding: 0.5rem 0;
+    }
+    .disclaimer {
       margin-top: 2rem;
+      background: rgba(255,80,80,0.1);
+      border-radius: 1rem;
+      padding: 0.8rem;
+      font-size: 0.7rem;
+      text-align: center;
+    }
+    footer {
+      margin-top: 1.5rem;
       text-align: center;
       font-size: 0.7rem;
       color: #555;
     }
-
     @media (max-width: 640px) {
       body { padding: 1rem; }
-      h1 { font-size: 1.6rem; }
-      .option-card { padding: 1rem 0.5rem; }
-      .input-group { flex-direction: column; }
-      button { width: 100%; justify-content: center; }
+      .coin-bar { position: static; margin-bottom: 1rem; text-align: right; }
+      .hero { margin-bottom: 1rem; }
     }
   </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -235,48 +244,61 @@
 <div class="container">
   <div class="hero">
     <h1>🔍 Check If Your Data Is Leaked</h1>
-    <div class="sub">Scan securely without exposing your personal information</div>
+    <div class="sub">Scan securely + Earn coins by referring friends</div>
+    <div class="coin-bar"><i class="fas fa-coins"></i> Coins: <span id="coinCount">0</span></div>
   </div>
 
   <!-- Selection Cards -->
   <div class="options" id="optionsContainer">
-    <div class="option-card" data-type="mobile">
-      <i class="fas fa-mobile-alt"></i>
-      <span>📱 Mobile Number</span>
-    </div>
-    <div class="option-card" data-type="aadhaar">
-      <i class="fas fa-id-card"></i>
-      <span>🆔 Aadhaar Number</span>
-    </div>
-    <div class="option-card" data-type="vehicle">
-      <i class="fas fa-car"></i>
-      <span>🚗 Vehicle Number</span>
-    </div>
-    <div class="option-card" data-type="ration">
-      <i class="fas fa-utensils"></i>
-      <span>🏠 Ration Card / Family ID</span>
-    </div>
+    <div class="option-card active" data-type="mobile"><i class="fas fa-mobile-alt"></i> Mobile Number</div>
+    <div class="option-card" data-type="aadhaar"><i class="fas fa-id-card"></i> Aadhaar Number</div>
+    <div class="option-card" data-type="vehicle"><i class="fas fa-car"></i> Vehicle Number</div>
+    <div class="option-card" data-type="ration"><i class="fas fa-utensils"></i> Ration / Family ID</div>
   </div>
 
   <!-- Input & Scan -->
   <div class="input-area">
     <div class="input-group">
-      <input type="text" id="userInput" placeholder="Enter mobile number (10 digits)" autocomplete="off">
+      <input type="text" id="userInput" placeholder="Enter 10-digit mobile number" autocomplete="off">
       <button id="scanBtn"><i class="fas fa-shield-alt"></i> Scan Now</button>
     </div>
   </div>
 
-  <!-- Result Section -->
+  <!-- Result Area -->
   <div id="resultArea" style="display: none;"></div>
 
-  <!-- Legal Disclaimer -->
-  <div class="disclaimer">
-    <i class="fas fa-exclamation-triangle"></i> 
-    This tool is for awareness purposes only. We do not display, store, or share any personal data. Results are limited to presence detection only.
+  <!-- Referral Popup -->
+  <div id="referralModal" class="modal">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closeReferralModal()">&times;</button>
+      <i class="fas fa-gift" style="font-size: 2rem; color: #ffcc00;"></i>
+      <h3>Share & Earn Coins!</h3>
+      <p>Your data was found in a leak. Help others stay safe – share this tool.</p>
+      <p><strong>1 referral = 1 coin</strong><br>Use 5 coins to unlock a detailed report.</p>
+      <div class="referral-link" id="referralLinkDisplay">Loading link...</div>
+      <div class="share-buttons">
+        <button class="share-btn" onclick="shareViaWhatsApp()"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+        <button class="share-btn" style="background:#1DA1F2;" onclick="copyReferralLink()"><i class="fas fa-copy"></i> Copy Link</button>
+      </div>
+    </div>
   </div>
-  <footer>
-    © 2025 Data Leak Checker — Privacy First
-  </footer>
+
+  <!-- Detailed Report Modal -->
+  <div id="detailModal" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+      <button class="close-modal" onclick="closeDetailModal()">&times;</button>
+      <i class="fas fa-file-alt" style="font-size: 2rem; color: #00ff88;"></i>
+      <h3>Detailed Exposure Report</h3>
+      <p>Based on our scan, your information appears in the following categories (no personal data displayed):</p>
+      <div id="detailContent" class="detail-list"></div>
+      <div style="font-size: 0.75rem; color: #aaa;">🔒 Your privacy is protected – no actual values are shown.</div>
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    <i class="fas fa-exclamation-triangle"></i> Awareness tool only. No personal data is stored or displayed.
+  </div>
+  <footer>© 2025 Data Leak Checker – Referral program for awareness</footer>
 </div>
 
 <script>
@@ -285,36 +307,141 @@
   const inputField = document.getElementById('userInput');
   const scanBtn = document.getElementById('scanBtn');
   const resultArea = document.getElementById('resultArea');
+  const coinSpan = document.getElementById('coinCount');
+  const referralModal = document.getElementById('referralModal');
+  const detailModal = document.getElementById('detailModal');
+  let selectedType = 'mobile';
+  let lastScanResult = null;     // store last found result for detail report
+  let referralCode = null;
 
-  let selectedType = 'mobile';   // default
-
-  // ---------- Card Selection + Glow ----------
-  function setActiveCard(type) {
-    cards.forEach(card => {
-      const cardType = card.getAttribute('data-type');
-      if (cardType === type) {
-        card.classList.add('active');
-      } else {
-        card.classList.remove('active');
-      }
-    });
-    // Update placeholder
-    if (type === 'mobile') inputField.placeholder = 'Enter 10-digit mobile number';
-    else if (type === 'aadhaar') inputField.placeholder = 'Enter 12-digit Aadhaar number';
-    else if (type === 'vehicle') inputField.placeholder = 'e.g., MH12AB1234';
-    else if (type === 'ration') inputField.placeholder = 'Ration Card / Family ID';
-    inputField.value = '';
-    resultArea.style.display = 'none';
+  // ---------- Coin & Referral Logic (localStorage) ----------
+  function getCoins() {
+    return parseInt(localStorage.getItem('leakCoins') || '0');
+  }
+  function setCoins(coins) {
+    localStorage.setItem('leakCoins', coins);
+    coinSpan.innerText = coins;
+  }
+  function addCoins(amount) {
+    setCoins(getCoins() + amount);
   }
 
+  // Generate or retrieve unique referral code for this device
+  function getReferralCode() {
+    let code = localStorage.getItem('referralCode');
+    if (!code) {
+      code = 'REF' + Math.random().toString(36).substring(2, 10).toUpperCase();
+      localStorage.setItem('referralCode', code);
+    }
+    return code;
+  }
+
+  // Process referral from URL (?ref=CODE)
+  function processReferral() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const ref = urlParams.get('ref');
+    if (!ref) return;
+    // Avoid self-referral
+    const myCode = getReferralCode();
+    if (ref === myCode) return;
+    // Check if already credited for this referrer
+    const credited = localStorage.getItem('credited_' + ref);
+    if (!credited) {
+      addCoins(1);
+      localStorage.setItem('credited_' + ref, 'true');
+      showNotification('🎉 You received 1 coin from a referral!', 'success');
+    }
+    // Remove ref from URL to avoid re-trigger
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
+  // Show referral popup (only if leak found and not already shown for this scan)
+  let popupShownForSession = false;
+  function showReferralPopup() {
+    if (popupShownForSession) return;
+    popupShownForSession = true;
+    const code = getReferralCode();
+    const link = `${window.location.origin}${window.location.pathname}?ref=${code}`;
+    document.getElementById('referralLinkDisplay').innerText = link;
+    referralModal.classList.add('active');
+  }
+  function closeReferralModal() {
+    referralModal.classList.remove('active');
+  }
+  function shareViaWhatsApp() {
+    const link = document.getElementById('referralLinkDisplay').innerText;
+    const text = `⚠️ Your data might be leaked! Check for free: ${link}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+  }
+  function copyReferralLink() {
+    const link = document.getElementById('referralLinkDisplay').innerText;
+    navigator.clipboard.writeText(link);
+    alert('Referral link copied! Share with friends.');
+  }
+
+  // Show detailed report (costs 5 coins)
+  function showDetailedReport() {
+    if (getCoins() < 5) {
+      alert(`You need 5 coins to unlock the detailed report. You have ${getCoins()} coins. Share the tool to earn more!`);
+      return;
+    }
+    if (!lastScanResult || !lastScanResult.found) {
+      alert('No leak data found for this scan. Run a new scan that shows a leak first.');
+      return;
+    }
+    // Deduct coins
+    addCoins(-5);
+    // Generate mock detailed categories based on type
+    const type = lastScanResult.type || selectedType;
+    let categories = [];
+    if (type === 'mobile') {
+      categories = ['Phone number linked accounts', 'SMS logs (metadata)', 'Call records (metadata)', 'Social media profiles'];
+    } else if (type === 'aadhaar') {
+      categories = ['Aadhaar validation logs', 'Government service records', 'Banking KYC references'];
+    } else if (type === 'vehicle') {
+      categories = ['Registration details', 'Challan history', 'Insurance records'];
+    } else {
+      categories = ['Family member links', 'Ration distribution logs', 'Subsidy records'];
+    }
+    const detailHtml = categories.map(cat => `<div class="detail-item"><i class="fas fa-database"></i> ${cat}</div>`).join('');
+    document.getElementById('detailContent').innerHTML = detailHtml;
+    detailModal.classList.add('active');
+  }
+  function closeDetailModal() {
+    detailModal.classList.remove('active');
+  }
+
+  function showNotification(msg, type = 'info') {
+    // Simple alert for demo, can be replaced with toast
+    alert(msg);
+  }
+
+  // ---------- Card Selection ----------
+  function setActiveCard(type) {
+    selectedType = type;
+    cards.forEach(card => {
+      const t = card.getAttribute('data-type');
+      if (t === type) card.classList.add('active');
+      else card.classList.remove('active');
+    });
+    const placeholders = {
+      mobile: 'Enter 10-digit mobile number',
+      aadhaar: 'Enter 12-digit Aadhaar number',
+      vehicle: 'e.g., MH12AB1234',
+      ration: 'Ration Card / Family ID'
+    };
+    inputField.placeholder = placeholders[type];
+    inputField.value = '';
+    resultArea.style.display = 'none';
+    lastScanResult = null;
+  }
   cards.forEach(card => {
     card.addEventListener('click', () => {
-      selectedType = card.getAttribute('data-type');
-      setActiveCard(selectedType);
+      setActiveCard(card.getAttribute('data-type'));
     });
   });
 
-  // ---------- Input Validation ----------
+  // ---------- Validation ----------
   function validateInput(type, value) {
     const trimmed = value.trim();
     if (!trimmed) return false;
@@ -330,14 +457,14 @@
     const url = `/api/check?type=${type}&input=${encodeURIComponent(input)}`;
     const response = await fetch(url);
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Server error');
+      const err = await response.json();
+      throw new Error(err.error || 'Server error');
     }
     return await response.json();
   }
 
-  // Show result UI
-  function displayResult(result) {
+  // Display result and handle referral popup + coin unlock button
+  function displayResult(result, queryType) {
     const found = result.found;
     const count = result.count || 0;
     let html = '';
@@ -347,8 +474,8 @@
           <div class="result-icon">⚠️</div>
           <div class="result-message">${result.message || 'Your data may be exposed in public or unsecured databases'}</div>
           <div class="risk-badge"><i class="fas fa-fire"></i> High Risk 🔴</div>
-          <div style="margin-top: 1rem; font-size: 0.85rem;">Found in ${count} record(s) (details hidden for privacy)</div>
-          <button id="ctaReportBtn" class="cta-btn"><i class="fas fa-file-alt"></i> View Full Security Report</button>
+          <div style="margin-top: 0.5rem; font-size: 0.85rem;">Found in ${count} record(s) (details hidden)</div>
+          <div id="unlockReportBtn" class="cta-btn" style="margin-top: 1rem;"><i class="fas fa-unlock-alt"></i> Unlock Detailed Report (5 coins)</div>
         </div>
       `;
     } else {
@@ -356,56 +483,64 @@
         <div class="result-card safe">
           <div class="result-icon">✅</div>
           <div class="result-message">${result.message || 'No data found in scanned sources'}</div>
-          <div style="margin-top: 0.5rem; font-size: 0.9rem; color: #aaa;">Your information appears safe in our scanned databases.</div>
-          <button id="ctaReportBtn" class="cta-btn"><i class="fas fa-shield-alt"></i> Learn about data safety</button>
+          <div style="margin-top: 0.5rem;">Your information appears safe in our scanned databases.</div>
+          <div class="cta-btn" onclick="window.open('https://nexgenaitech.online','_blank')"><i class="fas fa-shield-alt"></i> Learn about data safety</div>
         </div>
       `;
     }
     resultArea.innerHTML = html;
     resultArea.style.display = 'block';
-    // Attach CTA event
-    const ctaBtn = document.getElementById('ctaReportBtn');
-    if (ctaBtn) {
-      ctaBtn.addEventListener('click', () => {
-        window.open('https://nexgenaitech.online', '_blank');
-      });
+    lastScanResult = { found, count, type: queryType };
+
+    if (found) {
+      const unlockBtn = document.getElementById('unlockReportBtn');
+      if (unlockBtn) unlockBtn.onclick = () => showDetailedReport();
+      // Show referral popup only if leak found (and not already shown)
+      showReferralPopup();
     }
   }
 
-  // Loading state
+  // ---------- Scan Action ----------
   let isLoading = false;
   scanBtn.addEventListener('click', async () => {
     if (isLoading) return;
     const rawInput = inputField.value;
     if (!validateInput(selectedType, rawInput)) {
-      alert(`Please enter a valid ${selectedType === 'mobile' ? '10-digit mobile number' : selectedType === 'aadhaar' ? '12-digit Aadhaar' : selectedType === 'vehicle' ? 'vehicle number' : 'Ration/Family ID'}`);
+      alert(`Please enter a valid ${selectedType === 'mobile' ? '10-digit mobile' : selectedType === 'aadhaar' ? '12-digit Aadhaar' : selectedType === 'vehicle' ? 'vehicle number' : 'Ration ID'}`);
       return;
     }
     isLoading = true;
-    const originalBtnText = scanBtn.innerHTML;
+    const originalText = scanBtn.innerHTML;
     scanBtn.innerHTML = '<span class="loader"></span> Scanning...';
     scanBtn.disabled = true;
     try {
       const result = await checkLeak(selectedType, rawInput);
-      displayResult(result);
+      displayResult(result, selectedType);
     } catch (err) {
       console.error(err);
       alert('Scan failed. Please try again later.');
       resultArea.style.display = 'none';
     } finally {
       isLoading = false;
-      scanBtn.innerHTML = originalBtnText;
+      scanBtn.innerHTML = originalText;
       scanBtn.disabled = false;
     }
   });
 
-  // Optional: Enter key support
   inputField.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') scanBtn.click();
   });
 
-  // Initial active state
+  // ---------- Initialization ----------
   setActiveCard('mobile');
+  processReferral();
+  coinSpan.innerText = getCoins();
+  // Optional: show a small message if user has coins
+  if (getCoins() >= 5) {
+    setTimeout(() => {
+      alert(`You have ${getCoins()} coins! Run a scan and if a leak is found, you can unlock the detailed report.`);
+    }, 500);
+  }
 </script>
 </body>
 </html>
