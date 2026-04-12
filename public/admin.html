@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Admin Panel - Data Leak Checker Pro</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0a0a0a;
+      font-family: 'Segoe UI', system-ui, monospace;
+      color: #e0e0e0;
+      padding: 1rem;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* Cards */
+    .card {
+      background: rgba(20, 20, 30, 0.9);
+      backdrop-filter: blur(8px);
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(0, 255, 100, 0.2);
+    }
+
+    .btn {
+      background: linear-gradient(95deg, #00cc88, #00ffaa);
+      border: none;
+      border-radius: 2rem;
+      padding: 0.6rem 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      color: #0a0a0a;
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #00ff88;
+      color: #00ff88;
+    }
+
+    .btn-outline:hover {
+      background: rgba(0, 255, 136, 0.1);
+    }
+
+    input {
+      background: #0f0f17;
+      border: 1px solid #2a2a3a;
+      border-radius: 2rem;
+      padding: 0.6rem 1rem;
+      color: white;
+      width: 100%;
+      margin-bottom: 0.8rem;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #00ff88;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow-x: auto;
+      display: block;
+    }
+
+    th, td {
+      border: 1px solid #333;
+      padding: 0.8rem;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #0f0f17;
+      color: #00ff88;
+    }
+
+    .flex {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .login-box {
+      max-width: 380px;
+      margin: 5% auto;
+    }
+
+    .badge {
+      background: #ffcc00;
+      color: #0a0a0a;
+      border-radius: 2rem;
+      padding: 0.2rem 0.6rem;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+
+    .status-online {
+      color: #00ff88;
+    }
+
+    @media (max-width: 768px) {
+      th, td {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+      }
+      .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <!-- Admin 4-Step Login Section -->
+  <div id="adminLogin" class="card login-box">
+    <h2><i class="fas fa-shield-alt"></i> Admin Authentication</h2>
+    <input type="text" id="adminUser" placeholder="Username">
+    <input type="password" id="adminPass" placeholder="Password">
+    <input type="text" id="adminPin" placeholder="4-digit PIN" maxlength="4">
+    <input type="text" id="adminKey" placeholder="Security Key">
+    <button class="btn" id="adminLoginBtn" style="width:100%;"><i class="fas fa-key"></i> Grant Access</button>
+    <div id="adminError" style="color: #ff6666; margin-top: 1rem; text-align:center;"></div>
+  </div>
+
+  <!-- Admin Dashboard (after login) -->
+  <div id="adminDashboard" style="display:none;">
+    <div class="flex">
+      <h2><i class="fas fa-crown"></i> Admin Dashboard</h2>
+      <button class="btn btn-outline" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+
+    <!-- Stats / Actions -->
+    <div class="card">
+      <div class="flex">
+        <button class="btn" id="loadUsersBtn"><i class="fas fa-users"></i> Users</button>
+        <button class="btn" id="loadLogsBtn"><i class="fas fa-history"></i> All Search Logs</button>
+        <button class="btn btn-outline" id="refreshBtn"><i class="fas fa-sync-alt"></i> Refresh</button>
+      </div>
+    </div>
+
+    <!-- Content Area -->
+    <div class="card" id="contentArea">
+      <div style="text-align:center; padding: 2rem;">
+        <i class="fas fa-info-circle"></i> Select an option to view data.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let adminToken = localStorage.getItem('adminToken');
+
+  // Helper API call with admin token
+  async function adminFetch(url, options = {}) {
+    options.headers = options.headers || {};
+    if (adminToken) options.headers['Authorization'] = `Bearer ${adminToken}`;
+    options.headers['Content-Type'] = 'application/json';
+    const res = await fetch(url, options);
+    if (res.status === 401 || res.status === 403) {
+      logout();
+      throw new Error('Session expired or not authorized');
+    }
+    return res;
+  }
+
+  function logout() {
+    localStorage.removeItem('adminToken');
+    adminToken = null;
+    document.getElementById('adminLogin').style.display = 'block';
+    document.getElementById('adminDashboard').style.display = 'none';
+    document.getElementById('adminError').innerText = '';
+  }
+
+  // Load all users
+  async function loadUsers() {
+    const content = document.getElementById('contentArea');
+    content.innerHTML = '<div style="text-align:center;"><i class="fas fa-spinner fa-pulse"></i> Loading users...</div>';
+    try {
+      const res = await adminFetch('/admin/users');
+      const users = await res.json();
+      if (!users.length) {
+        content.innerHTML = '<div class="card">No users found.</div>';
+        return;
+      }
+      let html = `
+        <h3><i class="fas fa-users"></i> Registered Users</h3>
+        <div style="overflow-x: auto;">
+          <table>
+            <thead>
+              <tr><th>Username</th><th>Email</th><th>Coins</th><th>Referral Code</th><th>Referred By</th><th>Admin</th><th>Joined</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+      `;
+      users.forEach(u => {
+        html += `
+          <tr>
+            <td>${escapeHtml(u.username)}</td>
+            <td>${escapeHtml(u.email || '-')}</td>
+            <td><span class="badge">${u.coins}</span></td>
+            <td>${escapeHtml(u.referralCode || '-')}</td>
+            <td>${escapeHtml(u.referredBy || '-')}</td>
+            <td>${u.isAdmin ? '<span style="color:#00ff88;">Yes</span>' : 'No'}</td>
+            <td>${new Date(u.createdAt).toLocaleDateString()}</td>
+            <td><button class="btn btn-outline" onclick="addCoins('${u.username}')"><i class="fas fa-plus-circle"></i> Add Coins</button></td>
+          </tr>
+        `;
+      });
+      html += '</tbody></table></div>';
+      content.innerHTML = html;
+    } catch (err) {
+      content.innerHTML = `<div class="card" style="color:#ff6666;">Error loading users: ${err.message}</div>`;
+    }
+  }
+
+  // Load all search logs
+  async function loadLogs() {
+    const content = document.getElementById('contentArea');
+    content.innerHTML = '<div style="text-align:center;"><i class="fas fa-spinner fa-pulse"></i> Loading logs...</div>';
+    try {
+      const res = await adminFetch('/admin/logs?limit=500');
+      const logs = await res.json();
+      if (!logs.length) {
+        content.innerHTML = '<div class="card">No search logs found.</div>';
+        return;
+      }
+      let html = `
+        <h3><i class="fas fa-history"></i> Search Logs (Last 500)</h3>
+        <div style="overflow-x: auto;">
+          <table>
+            <thead>
+              <tr><th>User</th><th>Type</th><th>Query</th><th>Found</th><th>Count</th><th>IP</th><th>Device</th><th>Time</th></tr>
+            </thead>
+            <tbody>
+      `;
+      logs.forEach(log => {
+        html += `
+          <tr>
+            <td>${escapeHtml(log.username)}</td>
+            <td>${escapeHtml(log.type)}</td>
+            <td>${escapeHtml(log.query)}</td>
+            <td>${log.found ? '<span style="color:#ff4444;">Yes</span>' : '<span style="color:#00ff88;">No</span>'}</td>
+            <td>${log.count || 0}</td>
+            <td>${escapeHtml(log.ip || '-')}</td>
+            <td>${escapeHtml(log.deviceInfo || '-')}</td>
+            <td>${new Date(log.timestamp).toLocaleString()}</td>
+          </tr>
+        `;
+      });
+      html += '</tbody></table></div>';
+      content.innerHTML = html;
+    } catch (err) {
+      content.innerHTML = `<div class="card" style="color:#ff6666;">Error loading logs: ${err.message}</div>`;
+    }
+  }
+
+  // Add coins to a user
+  window.addCoins = async (username) => {
+    const amount = prompt(`Enter coin amount to add for ${username}:`, '10');
+    if (!amount || isNaN(amount)) return;
+    try {
+      const res = await adminFetch('/admin/add-coins', {
+        method: 'POST',
+        body: JSON.stringify({ username, amount: parseInt(amount) })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert(`Added ${amount} coins to ${username}. New balance: ${data.coins}`);
+        loadUsers(); // refresh user list
+      } else {
+        alert(data.error || 'Failed to add coins');
+      }
+    } catch (err) {
+      alert('Error: ' + err.message);
+    }
+  };
+
+  // Helper to escape HTML
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  // 4-STEP ADMIN LOGIN – sends credentials to backend
+  document.getElementById('adminLoginBtn').onclick = async () => {
+    const username = document.getElementById('adminUser').value.trim();
+    const password = document.getElementById('adminPass').value;
+    const pin = document.getElementById('adminPin').value.trim();
+    const securityKey = document.getElementById('adminKey').value.trim();
+    const errorDiv = document.getElementById('adminError');
+
+    if (!username || !password || !pin || !securityKey) {
+      errorDiv.innerText = 'All fields required';
+      return;
+    }
+
+    try {
+      const res = await fetch('/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, pin, key: securityKey })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        adminToken = data.token;
+        localStorage.setItem('adminToken', adminToken);
+        document.getElementById('adminLogin').style.display = 'none';
+        document.getElementById('adminDashboard').style.display = 'block';
+        loadUsers(); // default view
+      } else {
+        errorDiv.innerText = data.error || 'Invalid credentials';
+      }
+    } catch (err) {
+      errorDiv.innerText = 'Network error';
+    }
+  };
+
+  // Dashboard button handlers
+  document.getElementById('loadUsersBtn').onclick = loadUsers;
+  document.getElementById('loadLogsBtn').onclick = loadLogs;
+  document.getElementById('refreshBtn').onclick = () => {
+    if (document.activeElement === document.getElementById('loadUsersBtn')) loadUsers();
+    else if (document.activeElement === document.getElementById('loadLogsBtn')) loadLogs();
+    else loadUsers();
+  };
+  document.getElementById('logoutBtn').onclick = logout;
+
+  // Auto login if token exists
+  if (adminToken) {
+    // Verify token by trying to fetch users
+    fetch('/admin/users', { headers: { 'Authorization': `Bearer ${adminToken}` } })
+      .then(res => {
+        if (res.ok) {
+          document.getElementById('adminLogin').style.display = 'none';
+          document.getElementById('adminDashboard').style.display = 'block';
+          loadUsers();
+        } else {
+          logout();
+        }
+      })
+      .catch(() => logout());
+  }
+</script>
+</body>
+</html>
