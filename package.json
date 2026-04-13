@@ -1,37 +1,16 @@
 {
-  "name": "data-leak-checker-pro",
-  "version": "2.0.0",
-  "description": "Professional Data Leak Checker with user authentication, coin system, referral program, search history, and admin panel.",
+  "name": "data-leak-checker",
+  "version": "1.0.0",
+  "description": "Check if your data has been leaked - privacy aware tool",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+    "start": "node server.js"
   },
-  "keywords": [
-    "data-leak",
-    "security",
-    "osint",
-    "privacy",
-    "awareness",
-    "mongodb",
-    "express",
-    "jwt"
-  ],
-  "author": "Shahid Ansari",
-  "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",
     "mongoose": "^7.5.0",
-    "bcrypt": "^5.1.1",
-    "jsonwebtoken": "^9.0.2",
     "axios": "^1.6.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1"
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.1"
-  },
-  "engines": {
-    "node": ">=16.0.0"
   }
 }
